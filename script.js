@@ -54,3 +54,38 @@ function handleEmergency() {
         });
     }
 }
+// التعرف على الصوت
+const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+recognition.lang = 'ar-SA';
+recognition.interimResults = false;
+recognition.maxAlternatives = 1;
+
+document.querySelector('#start-btn').addEventListener('click', () => {
+    recognition.start();
+    document.getElementById('status').textContent = 'جاري الاستماع...';
+});
+
+recognition.onresult = (event) => {
+    const command = event.results[0][0].transcript;
+    document.getElementById('status').textContent = 'أمر المستخدم: ' + command;
+    processCommand(command);
+};
+
+// معالجة الأوامر
+function processCommand(command) {
+    if(command.includes('الطقس')) {
+        speak('جارٍ عرض حالة الطقس...');
+    } else if(command.includes('الوقت')) {
+        speak('الوقت الآن: ' + new Date().toLocaleTimeString());
+    } else {
+        speak('لم أفهم الأمر، حاول مرة أخرى.');
+    }
+}
+
+// تحويل النص إلى كلام
+function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ar-SA';
+    utterance.rate = 1;
+    speechSynthesis.speak(utterance);
+}
