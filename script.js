@@ -34,7 +34,30 @@ if (SpeechRecognition) {
             speak("تذكير: حان وقت تناول دواء الضغط الآن.", "ar-SA");
             chatBox.innerText = "تم تفعيل تذكير الدواء 💊";
         } 
-        else if (transcript.includes("طوارئ") || transcript.includes("emergency") || transcript.includes("help")) {
+        else if (transcript.includes("طوارئ") || transcript.includes(else if (transcript.includes("طوارئ") || transcript.includes("emergency") || transcript.includes("help")) {
+    speak("جاري تحديد موقعك الآن لإرسال المساعدة. ابقَ هادئاً.", "ar-SA");
+    chatBox.innerText = "🚨 جاري طلب المساعدة وتحديد الموقع...";
+
+    // الحصول على موقع الـ GPS
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            // عرض الإحداثيات (في الواقع يتم إرسالها لسيرفر الطوارئ)
+            chatBox.innerHTML += `<br>📍 موقعك الحالي: <br> خط العرض: ${lat} <br> خط الطول: ${lon}`;
+            
+            // رابط مباشر لخرائط جوجل لموقع المستخدم
+            const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
+            console.log("رابط الموقع للمسعفين:", mapLink);
+            
+            speak("تم تحديد موقعك بنجاح، المساعدة في الطريق إليك.", "ar-SA");
+        }, (error) => {
+            speak("تعذر تحديد الموقع، يرجى التأكد من تشغيل الـ GPS.", "ar-SA");
+        });
+    }
+}
+ || transcript.includes("help")) {
             speak("جاري الاتصال بالطوارئ وإرسال موقعك الآن. ابقَ هادئاً.", "ar-SA");
             chatBox.innerText = "🚨 جاري طلب المساعدة...";
         }
