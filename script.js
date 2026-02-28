@@ -1,79 +1,56 @@
 const startBtn = document.getElementById('start-btn');
 const chatBox = document.getElementById('chat-box');
 
-// محرك تحويل النص إلى كلام (النطق)
-function speak(text, lang) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang;
-    utterance.rate = 0.9; // سرعة هادئة تناسب كبار السن
-    window.speechSynthesis.speak(utterance);
+// وظيفة النطق - Text to Speech
+function speak(text) {
+    const msg = new SpeechSynthesisUtterance();
+    msg.text = text;
+    msg.lang = 'ar-SA';
+    window.speechSynthesis.speak(msg);
 }
 
 // إعداد التعرف على الصوت
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-if (SpeechRecognition) {
+if (!SpeechRecognition) {
+    chatBox.innerText = "متصفحك لا يدعم التعرف على الصوت. جرب Chrome.";
+} else {
     const recognition = new SpeechRecognition();
-    recognition.continuous = false;
+    recognition.lang = 'ar-SA'; // لغة الاستماع
     recognition.interimResults = false;
 
-    startBtn.addEventListener('click', () => {
-        // ترحيب أولي باللغتين
-        speak("مرحباً بك، أنا مساعدك الصوتي. كيف يمكنني مساعدتك؟", "ar-SA");
-        chatBox.innerText = "جاري الاستماع... Listening...";
-        recognition.lang = 'ar-SA'; // يبدأ بالاستماع للعربية
+    startBtn.onclick = () => {
         recognition.start();
-    });
+        chatBox.innerText = "أنا أسمعك الآن... تحدث";
+        // ترحيب صوتي عند البدء
+        speak("كيف يمكنني مساعدتك؟");
+    };
 
     recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript.toLowerCase();
-        chatBox.innerHTML = `<strong>لقد قلت:</strong> ${transcript}`;
+        const transcript = event.results[0][0].transcript;
+        chatBox.innerText = "قلت: " + transcript;
 
-        // تحليل الأوامر الذكية (عربي وإنجليزي)
-        if (transcript.includes("دواء") || transcript.includes("medicine")) {
-            speak("تذكير: حان وقت تناول دواء الضغط الآن.", "ar-SA");
-            chatBox.innerText = "تم تفعيل تذكير الدواء 💊";
-        } 
-        else if (transcript.includes("طوارئ") || transcript.includes(else if (transcript.includes("طوارئ") || transcript.includes("emergency") || transcript.includes("help")) {
-    speak("جاري تحديد موقعك الآن لإرسال المساعدة. ابقَ هادئاً.", "ar-SA");
-    chatBox.innerText = "🚨 جاري طلب المساعدة وتحديد الموقع...";
+        // تنفيذ الأوامر المفتاحية
+        if (transcript.includes("طوارئ") || transcript.includes("مساعدة")) {
+            handleEmergency();
+        } else if (transcript.includes("دواء") || transcript.includes("علاج")) {
+            speak("تذكير: حان موعد الدواء.");
+            chatBox.innerText = "💊 تم تفعيل تنبيه الدواء";
+        }
+    };
+}
 
-    // الحصول على موقع الـ GPS
+// وظيفة الطوارئ والـ GPS
+function handleEmergency() {
+    speak("جاري تحديد موقعك وإرسال طلب استغاثة.");
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
-            
-            // عرض الإحداثيات (في الواقع يتم إرسالها لسيرفر الطوارئ)
-            chatBox.innerHTML += `<br>📍 موقعك الحالي: <br> خط العرض: ${lat} <br> خط الطول: ${lon}`;
-            
-            // رابط مباشر لخرائط جوجل لموقع المستخدم
-            const mapLink = `https://www.google.com/maps?q=${lat},${lon}`;
-            console.log("رابط الموقع للمسعفين:", mapLink);
-            
-            speak("تم تحديد موقعك بنجاح، المساعدة في الطريق إليك.", "ar-SA");
-        }, (error) => {
-            speak("تعذر تحديد الموقع، يرجى التأكد من تشغيل الـ GPS.", "ar-SA");
+            chatBox.innerHTML = `🚨 طوارئ! <br> موقعك: ${lat}, ${lon}`;
+            speak("تم تحديد موقعك بنجاح.");
+        }, () => {
+            speak("فشل تحديد الموقع، تأكد من تفعيل الـ GPS.");
         });
     }
-}
- || transcript.includes("help")) {
-            speak("جاري الاتصال بالطوارئ وإرسال موقعك الآن. ابقَ هادئاً.", "ar-SA");
-            chatBox.innerText = "🚨 جاري طلب المساعدة...";
-        }
-        else if (transcript.includes("hello") || transcript.includes("كيف حالك")) {
-            speak("I am fine, how can I help you today?", "en-US");
-            chatBox.innerText = "Hello! How can I help?";
-        }
-        else {
-            speak("وصلت رسالتك، سأقوم بمساعدتك فوراً.", "ar-SA");
-        }
-    };
-
-    recognition.onerror = () => {
-        chatBox.innerText = "عذراً، لم أسمعك جيداً. اضغط مرة أخرى.";
-    };
-
-} else {
-    chatBox.innerText = "المتصفح لا يدعم تقنية الصوت.";
 }
