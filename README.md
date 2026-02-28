@@ -1,0 +1,1 @@
+Arabic voice assistant for the elderly, visually impaired, illiterate users, and people with disabilities. Speaks and understands Arabic, enabling easy access to digital services. Technologies: HTML,CSS,JavaScript,Web Speech API. How to run: Open index.html, click "Start Speaking" and talk in Arabic.
