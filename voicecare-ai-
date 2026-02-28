@@ -1,7 +1,91 @@
-صدى "# voicecare-ai-" >> README.md
-جيت إنيت
-git إضافة README.md
-git commit -m "الالتزام الأول"
-فرع git -M الرئيسي
-git remote add origin https://github.com/besh0001000/voicecare-ai-.git
-git push -u origin main
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>VoiceCare AI</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f0f4f8; text-align: center; padding: 40px; }
+    h1 { color: #1e3a8a; }
+    #chat-box { 
+      max-width: 600px; margin: 20px auto; padding: 20px; 
+      background: #fff; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
+      text-align: left; min-height: 200px; overflow-y: auto;
+    }
+    .user { color: #4CAF50; margin: 5px 0; }
+    .bot { color: #2563eb; margin: 5px 0; }
+    button { 
+      font-size: 20px; padding: 15px 30px; margin-top: 20px; 
+      cursor: pointer; background-color: #4CAF50; color: white; border: none; border-radius: 8px;
+      transition: 0.3s;
+    }
+    button:hover { background-color: #45a049; }
+  </style>
+</head>
+<body>
+
+  <h1>🎙️ VoiceCare AI</h1>
+  <p>تحدث مع المساعد العربي الذكي:</p>
+
+  <button id="start-btn">ابدأ التحدث 🎤</button>
+
+  <div id="chat-box"></div>
+
+  <script>
+    const startBtn = document.getElementById("start-btn");
+    const chatBox = document.getElementById("chat-box");
+
+    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition.lang = 'ar-SA';
+    recognition.interimResults = false;
+
+    startBtn.addEventListener("click", () => {
+      recognition.start();
+    });
+
+    recognition.onresult = (event) => {
+      const userText = event.results[0][0].transcript;
+      addMessage(userText, 'user');
+
+      // استدعاء الرد (هنا مؤقت، يمكن لاحقًا ربط API)
+      const botReply = generateBotReply(userText);
+      addMessage(botReply, 'bot');
+      speak(botReply);
+    };
+
+    recognition.onerror = (event) => {
+      console.error(event.error);
+    };
+
+    function addMessage(text, sender) {
+      const p = document.createElement("p");
+      p.textContent = text;
+      p.className = sender;
+      chatBox.appendChild(p);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function speak(text) {
+      const msg = new SpeechSynthesisUtterance();
+      msg.text = text;
+      msg.lang = 'ar-SA';
+      msg.rate = 1;
+      msg.pitch = 1;
+      window.speechSynthesis.speak(msg);
+    }
+
+    function generateBotReply(userText) {
+      // هنا منطق المساعد الذكي - حاليا مؤقت
+      if (userText.includes("مرحبا") || userText.includes("السلام")) {
+        return "مرحبًا! أنا مساعدك الصوتي العربي، كيف يمكنني مساعدتك اليوم؟";
+      } else if (userText.includes("الخدمات الرقمية")) {
+        return "يمكنك استخدام الخدمات الرقمية بكل سهولة عبر VoiceCare AI.";
+      } else if (userText.includes("كيف حالك")) {
+        return "أنا بخير شكرًا لسؤالك! كيف يمكنني مساعدتك؟";
+      } else {
+        return "شكرًا لك! يمكنك طرح أي سؤال أو تجربة التحدث معي.";
+      }
+    }
+  </script>
+
+</body>
+</html>
