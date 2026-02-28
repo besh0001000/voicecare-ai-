@@ -1,0 +1,7 @@
+صدى "# voicecare-ai-" >> README.md
+جيت إنيت
+git إضافة README.md
+git commit -m "الالتزام الأول"
+فرع git -M الرئيسي
+git remote add origin https://github.com/besh0001000/voicecare-ai-.git
+git push -u origin main
